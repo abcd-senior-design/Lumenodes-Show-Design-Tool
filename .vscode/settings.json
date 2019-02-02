@@ -1,0 +1,16 @@
+{
+	"python.linting.pep8Enabled": true,
+	"python.linting.pylintPath": "pylint",
+	"python.linting.pylintArgs": [
+		"--load-plugins",
+		"pylint_django"
+	],
+	"python.linting.pylintEnabled": true,
+	"python.linting.pep8Args": [
+		"--ignore=E303"
+	],
+	"editor.formatOnSave": true,
+	"editor.rulers": [
+		79
+	]
+}
