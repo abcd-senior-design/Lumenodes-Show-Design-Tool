@@ -43,6 +43,11 @@ class SDTOpRibbon(PanedWindow):
             self.column_width = self.winfo_width() // \
                 self.COLS[self.layout_state] + 5
 
+            # Update Sticky to expand properly once minimum column width is
+            # determined
+            row = self.grid_info()['row']
+            self.grid(in_=self.master.master, row=row, sticky="nwe")
+
         if(event.widget is self and self.column_width > 0):
             new_width = event.width
             new_height = event.height

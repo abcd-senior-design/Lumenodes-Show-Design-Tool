@@ -99,12 +99,12 @@ class ShowDesignTool(Frame):
 
         # Operation Ribbon Setup
         self.op_ribbon = SDTOpRibbon(master=self.master, sdt=self)
-        self.op_ribbon.grid(in_=self.master, row=self.row_cnt, sticky="nwe")
+        self.op_ribbon.grid(in_=self.master, row=self.row_cnt, sticky="n")
         self.row_cnt += 1
 
         # Individual Show Notebook Setup
         self.show_notebook = SDTShowNotebook(
-            master=self.master, show_cnt=8, set_cnt=256)
+            master=self.master, show_cnt=16, set_cnt=256)
         self.show_notebook.grid(
             in_=self.master, row=self.row_cnt, sticky="nswe")
         self.row_cnt += 1
