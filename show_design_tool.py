@@ -1,5 +1,6 @@
 from datetime import datetime
 from sdt_op_ribbon import SDTOpRibbon
+from sdt_show_notebook import SDTShowNotebook
 from tkinter import Tk
 from tkinter.ttk import Frame, Label
 
@@ -11,8 +12,8 @@ class ShowDesignTool(Frame):
         Frame.__init__(self, master)
         self.master = master
 
+        # Initialize Layout Variables
         self.row_cnt = 0
-
         self.status_cnt = 0
         self.status_log = ""
 
@@ -56,24 +57,38 @@ class ShowDesignTool(Frame):
             pass
 
     def _format_window(self):
-        self.master.minsize(self.master.winfo_width(),
-                            self.master.winfo_height())
+        minwidth = self.master.winfo_width()
+        minheight = self.master.winfo_height()
+        screenwidth = self.master.winfo_screenwidth()
+        screenheight = self.master.winfo_screenheight()
 
         width_prop = 0.7
         height_prop = 0.5
 
+        if(minwidth > screenwidth):
+            minwidth = int(width_prop * screenwidth)
+        if(minheight > screenheight):
+            minheight = int(height_prop * screenheight)
+        self.master.minsize(minwidth, minheight)
+
         # Resize to Decent Proportion of Window
-        new_width = int(width_prop * self.master.winfo_screenwidth())
-        new_height = int(height_prop * self.master.winfo_screenheight())
-        new_x_pos = int((1 - width_prop) *
-                        self.master.winfo_screenwidth() // 2)
-        new_y_pos = int((1 - height_prop) *
-                        self.master.winfo_screenheight() // 2)
+        new_width = int(width_prop * screenwidth)
+        new_height = int(height_prop * screenheight)
+        new_x_pos = int((1 - width_prop) * screenwidth // 2)
+        new_y_pos = int((1 - height_prop) * screenheight // 2)
 
         geometry_str = "{}x{}+{}+{}".format(new_width, new_height,
                                             new_x_pos, new_y_pos)
 
         self.master.geometry(geometry_str)
+
+        # Prohibit each row (except the row that contains the individual
+        # shows) from expanding after minimum size is determined
+        # and the window is resized appropriately
+        notebook_row = self.show_notebook.grid_info()['row']
+        for i in range(self.row_cnt):
+            if(i != notebook_row):
+                self.master.grid_rowconfigure(index=i, weight=0)
 
     def _init_window(self):
         # Initial Window Setup
@@ -81,11 +96,17 @@ class ShowDesignTool(Frame):
         self.master.resizable(True, True)
 
         self.master.grid_columnconfigure(index=0, weight=1)
-        self.master.grid_rowconfigure(index=0, weight=1)
 
         # Operation Ribbon Setup
         self.op_ribbon = SDTOpRibbon(master=self.master, sdt=self)
         self.op_ribbon.grid(in_=self.master, row=self.row_cnt, sticky="nwe")
+        self.row_cnt += 1
+
+        # Individual Show Notebook Setup
+        self.show_notebook = SDTShowNotebook(
+            master=self.master, show_cnt=8, set_cnt=256)
+        self.show_notebook.grid(
+            in_=self.master, row=self.row_cnt, sticky="nswe")
         self.row_cnt += 1
 
         # Status Output
@@ -93,10 +114,10 @@ class ShowDesignTool(Frame):
         self.status_out.grid(in_=self.master, row=self.row_cnt, sticky="s")
         self.row_cnt += 1
 
-    def _op_ribbon_update(self, rowspan):
-        # TODO: Adjust rows given to the op_ribbon based on how many
-        # rows it actually needs
-        pass
+        # Allow Each Row to expand appropriately to fit contents upon initial
+        # creation of each element
+        for i in range(self.row_cnt):
+            self.master.grid_rowconfigure(index=i, weight=1)
 
 
 if __name__ == "__main__":

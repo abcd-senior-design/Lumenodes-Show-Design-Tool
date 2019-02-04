@@ -33,6 +33,9 @@ class SDTOpRibbon(PanedWindow):
         self.widgets = []
 
         self._init_ribbon()
+
+        # Bind method that updates layout based on the size allocated
+        # to the SDTOpRibbon
         self.bind("<Configure>", self.configure_op_ribbon)
 
     def configure_op_ribbon(self, event):
@@ -143,9 +146,3 @@ class SDTOpRibbon(PanedWindow):
 
         for i in range(self.COLS[self.layout_state]):
             self.grid_columnconfigure(index=i, weight=1)
-
-        rowspan = self.curr_row
-        if(self.curr_left_col == 0 and
-           self.curr_right_col == self.COLS[self.layout_state]):
-            rowspan -= 1
-        self.sdt._op_ribbon_update(rowspan)
