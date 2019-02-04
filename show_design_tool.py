@@ -1,6 +1,6 @@
 from datetime import datetime
 from sdt_op_ribbon import SDTOpRibbon
-from sdt_show_notebook import SDTShowNotebook
+from sdt_show_frame import SDTShowFrame
 from tkinter import Tk
 from tkinter.ttk import Frame, Label
 
@@ -85,9 +85,9 @@ class ShowDesignTool(Frame):
         # Prohibit each row (except the row that contains the individual
         # shows) from expanding after minimum size is determined
         # and the window is resized appropriately
-        notebook_row = self.show_notebook.grid_info()['row']
+        frame_row = self.show_frame.grid_info()['row']
         for i in range(self.row_cnt):
-            if(i != notebook_row):
+            if(i != frame_row):
                 self.master.grid_rowconfigure(index=i, weight=0)
 
     def _init_window(self):
@@ -102,10 +102,10 @@ class ShowDesignTool(Frame):
         self.op_ribbon.grid(in_=self.master, row=self.row_cnt, sticky="n")
         self.row_cnt += 1
 
-        # Individual Show Notebook Setup
-        self.show_notebook = SDTShowNotebook(
-            master=self.master, show_cnt=16, set_cnt=256)
-        self.show_notebook.grid(
+        # Individual Show Frame Setup
+        self.show_frame = SDTShowFrame(
+            master=self.master, show_cnt=512, set_cnt=256)
+        self.show_frame.grid(
             in_=self.master, row=self.row_cnt, sticky="nswe")
         self.row_cnt += 1
 
