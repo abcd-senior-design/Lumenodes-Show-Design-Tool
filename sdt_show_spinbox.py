@@ -16,6 +16,26 @@ class SDTShowSpinbox(Spinbox):
                          textvariable=self.curr_show,
                          width=width)
 
+        # Bind FocusOut event to update the show number when the user leaves
+        # the spinbox (which intuitively means that the user has edited the
+        # number to satisfy their desire)
+        self.bind("<FocusOut>", self._enter_spinbox)
+
+        # Bind MouseWheel event to scroll the spinbox when the user scrolls
+        # their mousewheel
+        self.bind("<MouseWheel>", self._scroll_spinbox)
+
+        # Bind Return event to update the show number when the user presses
+        # the enter key (which intuitively means that the user has edited the
+        # number to satisfy their desire)
+        self.bind("<Return>", self._enter_spinbox)
+
+        # Sets up the spinbox to verify that only numbers are being entered
+        # into the spinbox.  This function must be called every time that a
+        # spinbox action takes place to ensure that it continues to stay
+        # linked appropriately.
+        self._setup_validate()
+
     def get_show_num(self):
         return self.curr_show.get()
 
@@ -27,3 +47,21 @@ class SDTShowSpinbox(Spinbox):
             # This is necessary because when show_cnt == 1, then the bounds of
             # the Spinbox don't work properly
             self.curr_show.set(1)
+        # Function must be called after the text variable is changed because
+        # .set() disconnects the validate function
+        self._setup_validate()
+
+    def _enter_spinbox(self, event):
+        self.set_show_num(show_num=self.curr_show.get())
+
+    def _scroll_spinbox(self, event):
+        increment = event.delta // 120
+        new_value = self.curr_show.get() + increment - 1
+        self.set_show_num(show_num=new_value)
+
+    def _setup_validate(self):
+        validatecommand = self.register(self._validate_input)
+        self.configure(validate="all", validatecommand=(validatecommand, "%S"))
+
+    def _validate_input(self, input_value):
+        return input_value.isdigit()

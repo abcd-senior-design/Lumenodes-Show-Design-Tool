@@ -51,3 +51,6 @@ class SDTShowFrame(Frame):
     def _update_show_treeview(self):
         show_idx = self.show_spinbox.get_show_num() - 1
         self.show_treeview.populate_set_instrs(indv_show=self.shows[show_idx])
+        # Function must be called after the text variable is changed because
+        # .set() disconnects the validate function
+        self.show_spinbox._setup_validate()
