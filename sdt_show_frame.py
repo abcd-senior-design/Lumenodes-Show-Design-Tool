@@ -1,7 +1,7 @@
 from sdt_individual_show import SDTIndividualShow
 from sdt_show_spinbox import SDTShowSpinbox
 from sdt_show_treeview import SDTShowTreeview
-from tkinter.ttk import Frame, Label
+from tkinter.ttk import Frame, Label, Scrollbar
 
 
 class SDTShowFrame(Frame):
@@ -38,6 +38,12 @@ class SDTShowFrame(Frame):
         self.show_treeview = SDTShowTreeview(master=self, set_cnt=self.set_cnt)
         self.show_treeview.grid(in_=self, row=1, column=0,
                                 columnspan=2, sticky="nswe")
+
+        # Show Scrollbar
+        self.show_scrollbar = Scrollbar(
+            master=self, command=self.show_treeview.yview)
+        self.show_treeview.configure(yscrollcommand=self.show_scrollbar.set)
+        self.show_scrollbar.grid(in_=self, row=1, column=2, sticky="ns")
 
         # Individual Show Wrappers
         self._init_shows()
