@@ -153,5 +153,6 @@ tags
 
 # End of https://www.gitignore.io/api/vim,python,visualstudiocode
 
-### Show Design Tool Logs ###
+### Show Design Tool Files ###
 .status_logs/*
+global_shows/*
