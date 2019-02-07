@@ -17,6 +17,10 @@ class ShowDesignTool(Frame):
         self.status_cnt = 0
         self.status_log = ""
 
+        # Initialize Global Show Variables
+        self.individual_show_cnt = 4
+        self.set_cnt = 2
+
         # Initializes Window to Most Compact Configuration
         self._init_window()
         # Forces Window to Update
@@ -103,8 +107,9 @@ class ShowDesignTool(Frame):
         self.row_cnt += 1
 
         # Individual Show Frame Setup
-        self.show_frame = SDTShowFrame(
-            master=self.master, show_cnt=512, set_cnt=256)
+        self.show_frame = SDTShowFrame(master=self.master, sdt=self,
+                                       show_cnt=self.individual_show_cnt,
+                                       set_cnt=self.set_cnt)
         self.show_frame.grid(
             in_=self.master, row=self.row_cnt, sticky="nswe")
         self.row_cnt += 1

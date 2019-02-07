@@ -3,7 +3,9 @@ from tkinter import IntVar, Spinbox
 
 
 class SDTShowSpinbox(Spinbox):
-    def __init__(self, master=None, show_cnt=1, command=None):
+    def __init__(self, master=None, sdt=None, show_cnt=1, command=None):
+        self.sdt = sdt
+
         # Initialize Variables
         self.curr_show = IntVar()
         self.curr_show.set(1)

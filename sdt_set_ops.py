@@ -4,17 +4,17 @@ from tkinter.ttk import Button
 
 
 class SDTSetOps(SDTOpsFrame):
-    def __init__(self, master=None):
-        SDTOpsFrame.__init__(self, master, text="Set Operations")
+    def __init__(self, master=None, sdt=None):
+        SDTOpsFrame.__init__(self, master=master, sdt=sdt,
+                             text="Set Operations")
+
         self._init_ops()
 
     def add_set(self):
-        str = "Add Set"
-        self.master.status_update(str)
+        self._sdt_status_update("Add Set")
 
     def remove_set(self):
-        str = "Remove Set"
-        self.master.status_update(str)
+        self._sdt_status_update("Remove Set")
 
     def _init_ops(self):
         # Set Operations

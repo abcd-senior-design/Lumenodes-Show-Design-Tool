@@ -1,5 +1,5 @@
 from sdt_file_ops import SDTFileOps
-from sdt_instr_ops import SDTInstrOps
+from sdt_instruction_ops import SDTInstructionOps
 from sdt_pack_ops import SDTPackOps
 from sdt_set_ops import SDTSetOps
 from sdt_show_ops import SDTShowOps
@@ -21,7 +21,6 @@ class SDTOpRibbon(PanedWindow):
 
     def __init__(self, master=None, sdt=None):
         PanedWindow.__init__(self, master, orient="horizontal")
-        self.master = master
         self.sdt = sdt
 
         # Initialize Layout Variables
@@ -46,7 +45,8 @@ class SDTOpRibbon(PanedWindow):
             # Update Sticky to expand properly once minimum column width is
             # determined
             row = self.grid_info()['row']
-            self.grid(in_=self.master.master, row=row, sticky="nwe")
+            in_ = self.grid_info()['in']
+            self.grid(in_=in_, row=row, sticky="nwe")
 
         if(event.widget is self and self.column_width > 0):
             new_width = event.width
@@ -61,9 +61,6 @@ class SDTOpRibbon(PanedWindow):
 
             elif(new_width < self.column_width * self.COLS[self.LAYOUT_STD]):
                 self._update_layout(self.LAYOUT_NARROW)
-
-    def status_update(self, status_str):
-        self.sdt.status_update(status_str)
 
     def _add(self, widget, alignment=ALIGN_LEFT):
         row = 0
@@ -109,23 +106,23 @@ class SDTOpRibbon(PanedWindow):
 
     def _init_ribbon(self):
         # Global Show (File) Operations
-        self.file_ops = SDTFileOps(master=self)
+        self.file_ops = SDTFileOps(master=self, sdt=self.sdt)
         self._add(self.file_ops, self.ALIGN_LEFT)
 
         # Individual Show Operations
-        self.show_ops = SDTShowOps(master=self)
+        self.show_ops = SDTShowOps(master=self, sdt=self.sdt)
         self._add(self.show_ops, self.ALIGN_LEFT)
 
         # Set Operations
-        self.set_ops = SDTSetOps(master=self)
+        self.set_ops = SDTSetOps(master=self, sdt=self.sdt)
         self._add(self.set_ops, self.ALIGN_LEFT)
 
         # Set Instruction Operations
-        self.instr_ops = SDTInstrOps(master=self)
-        self._add(self.instr_ops, self.ALIGN_LEFT)
+        self.instruction_ops = SDTInstructionOps(master=self, sdt=self.sdt)
+        self._add(self.instruction_ops, self.ALIGN_LEFT)
 
         # Pack Operations
-        self.pack_ops = SDTPackOps(master=self)
+        self.pack_ops = SDTPackOps(master=self, sdt=self.sdt)
         self._add(self.pack_ops, self.ALIGN_RIGHT)
 
         for i in range(self.COLS[self.layout_state]):

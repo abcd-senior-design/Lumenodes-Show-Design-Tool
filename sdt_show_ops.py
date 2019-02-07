@@ -4,17 +4,17 @@ from tkinter.ttk import Button
 
 
 class SDTShowOps(SDTOpsFrame):
-    def __init__(self, master=None):
-        SDTOpsFrame.__init__(self, master, text="Show Operations")
+    def __init__(self, master=None, sdt=None):
+        SDTOpsFrame.__init__(self, master=master, sdt=sdt,
+                             text="Show Operations")
+
         self._init_ops()
 
     def add_show(self):
-        str = "Add Show"
-        self.master.status_update(str)
+        self._sdt_status_update("Add Show")
 
     def remove_show(self):
-        str = "Remove Show"
-        self.master.status_update(str)
+        self._sdt_status_update("Remove Show")
 
     def _init_ops(self):
         # Individual Show Operations

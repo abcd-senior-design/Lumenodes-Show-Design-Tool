@@ -4,21 +4,20 @@ from tkinter.ttk import Button
 
 
 class SDTFileOps(SDTOpsFrame):
-    def __init__(self, master=None):
-        SDTOpsFrame.__init__(self, master, text="File Operations")
+    def __init__(self, master=None, sdt=None):
+        SDTOpsFrame.__init__(self, master=master, sdt=sdt,
+                             text="File Operations")
+
         self._init_ops()
 
     def create_new_file(self):
-        str = "Create New File"
-        self.master.status_update(str)
+        self._sdt_status_update("Create New File")
 
     def open_file(self):
-        str = "Open File"
-        self.master.status_update(str)
+        self._sdt_status_update("Open File")
 
     def save_file(self):
-        str = "Save File"
-        self.master.status_update(str)
+        self._sdt_status_update("Save File")
 
     def _init_ops(self):
         # Global Show (File) Operations

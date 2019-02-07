@@ -4,25 +4,23 @@ from tkinter.ttk import Button
 
 
 class SDTPackOps(SDTOpsFrame):
-    def __init__(self, master=None):
-        SDTOpsFrame.__init__(self, master, text="Pack Operations")
+    def __init__(self, master=None, sdt=None):
+        SDTOpsFrame.__init__(self, master=master, sdt=sdt,
+                             text="Pack Operations")
+
         self._init_ops()
 
     def add_pack_id(self):
-        str = "Add Pack ID"
-        self.master.status_update(str)
+        self._sdt_status_update("Add Pack ID")
 
     def alias_pack_id(self):
-        str = "Alias Pack ID"
-        self.master.status_update(str)
+        self._sdt_status_update("Alias Pack ID")
 
     def assign_pack_id(self):
-        str = "Assign Pack ID"
-        self.master.status_update(str)
+        self._sdt_status_update("Assign Pack ID")
 
     def remove_pack_id(self):
-        str = "Remove Pack ID"
-        self.master.status_update(str)
+        self._sdt_status_update("Remove Pack ID")
 
     def _init_ops(self):
             # Pack Operations

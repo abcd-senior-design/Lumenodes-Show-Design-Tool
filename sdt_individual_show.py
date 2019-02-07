@@ -4,23 +4,24 @@ from random import randint
 
 
 class SDTIndividualShow:
-    def __init__(self, master=None, set_cnt=1):
+    def __init__(self, master=None, sdt=None, set_cnt=1):
         self.master = master
+        self.sdt = sdt
 
         # Initialize Variables
         self.set_cnt = set_cnt
-        self.set_instrs = []
+        self.set_instructions = []
 
         self._init_show()
 
-    def add_set_instr(self):
+    def add_set_instruction(self):
         # Tuple Representing R, G, and B values respectively
         r = randint(0, 255)
         g = randint(0, 255)
         b = randint(0, 255)
-        set_instr = (r, g, b)
-        self.set_instrs.append(set_instr)
+        set_instruction = (r, g, b)
+        self.set_instructions.append(set_instruction)
 
     def _init_show(self):
         for i in range(self.set_cnt):
-            self.add_set_instr()
+            self.add_set_instruction()
