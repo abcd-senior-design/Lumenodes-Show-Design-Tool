@@ -41,6 +41,13 @@ class SDTShowSpinbox(Spinbox):
     def get_show_num(self):
         return self.curr_show.get()
 
+    def reconfigure_show_cnt(self, new_show_cnt):
+        width = 2 * int(log10(new_show_cnt))
+        self.configure(to=new_show_cnt)
+        self.configure(width=width)
+        self.show_cnt = new_show_cnt
+        self.set_show_num(self.curr_show.get())
+
     def set_show_num(self, show_num=1):
         if(self.show_cnt > 1):
             self.curr_show.set(show_num - 1)

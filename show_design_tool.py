@@ -47,6 +47,23 @@ class ShowDesignTool(Frame):
             with open(directory + os.sep + filename, "w") as status_output:
                 status_output.write(self.status_log)
 
+    def get_global_show_info(self):
+        global_show_info = {}
+        global_show_info["type"] = "global_show"
+        global_show_info["set_cnt"] = self.set_cnt
+        global_show_info["individual_show_cnt"] = self.individual_show_cnt
+        global_show_info["individual_shows"] = \
+            self.show_frame.get_show_info_list()
+        return global_show_info
+
+    def reconfigure_global_show(self, global_show_info):
+        self.set_cnt = global_show_info["set_cnt"]
+        self.individual_show_cnt = global_show_info["individual_show_cnt"]
+        new_show_info_list = global_show_info["individual_shows"]
+        self.show_frame.reconfigure_show_list(new_show_info_list,
+                                              self.individual_show_cnt,
+                                              self.set_cnt)
+
     def status_update(self, status_str):
         self.status_cnt += 1
         new_status = "Status #{}: ".format(self.status_cnt) + status_str

@@ -22,14 +22,34 @@ class SDTShowTreeview(Treeview):
                 self.item(self.set_iids[i],
                           values=individual_show.set_instructions[i])
 
+    def reconfigure_set_cnt(self, new_set_cnt):
+        self._adjust_set_cnt(new_set_cnt)
+
+    def _add_set(self):
+        new_set_iid = self.insert(parent="",
+                                  index="end",
+                                  text="{}".format(len(self.set_iids) + 1),
+                                  open=False)
+        self.set_iids.append(new_set_iid)
+
+    def _adjust_set_cnt(self, new_set_cnt):
+        diff = new_set_cnt - self.set_cnt
+        self.set_cnt = new_set_cnt
+        if(diff > 0):
+            for i in range(diff):
+                self._add_set()
+        elif(diff < 0):
+            for i in range(-diff):
+                tmp_set_iid = self.set_iids.pop()
+                self.delete(tmp_set_iid)
+
     def _block_column_resize(self, event):
         if(self.identify_region(event.x, event.y) == "separator"):
             return "break"
 
     def _init_sets(self):
         for i in range(self.set_cnt):
-            self.set_iids.append(self.insert(
-                parent="", index="end", text="{}".format(i + 1), open=False))
+            self._add_set()
 
     def _init_treeview(self):
         self.column("#0", anchor="center", minwidth=50,

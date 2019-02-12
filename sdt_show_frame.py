@@ -16,10 +16,43 @@ class SDTShowFrame(Frame):
 
         self._init_frame()
 
+    def get_show_info_list(self):
+        show_info_list = []
+
+        for i in range(self.show_cnt):
+            show_info = self.individual_shows[i].get_show_info()
+            show_info_list.append(show_info)
+
+        return show_info_list
+
+    def reconfigure_show_list(self, new_show_info_list,
+                              new_show_cnt, new_set_cnt):
+        self.set_cnt = new_set_cnt
+        self._adjust_show_cnt(new_show_cnt)
+
+        for i in range(self.show_cnt):
+            self.individual_shows[i].reconfigure_show(
+                new_show_info_list[i], new_set_cnt)
+
+        self.show_treeview.reconfigure_set_cnt(self.set_cnt)
+        self.show_spinbox.reconfigure_show_cnt(self.show_cnt)
+
+        self._update_show_treeview()
+
     def _add_new_show(self):
         show = SDTIndividualShow(
             master=self, sdt=self.sdt, set_cnt=self.set_cnt)
         self.individual_shows.append(show)
+
+    def _adjust_show_cnt(self, new_show_cnt):
+        diff = new_show_cnt - self.show_cnt
+        self.show_cnt = new_show_cnt
+        if(diff > 0):
+            for i in range(diff):
+                self._add_new_show()
+        elif(diff < 0):
+            for i in range(-diff):
+                self.individual_shows.pop()
 
     def _init_frame(self):
         self.grid_columnconfigure(index=0, weight=1)
