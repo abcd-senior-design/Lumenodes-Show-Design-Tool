@@ -1,6 +1,8 @@
+from sdt_bounds import *
 from sdt_individual_show import SDTIndividualShow
 from sdt_show_spinbox import SDTShowSpinbox
 from sdt_show_treeview import SDTShowTreeview
+from tkinter import messagebox
 from tkinter.ttk import Frame, Label, Scrollbar
 
 
@@ -15,6 +17,20 @@ class SDTShowFrame(Frame):
         self.individual_shows = []  # Stores SDTIndividualShow objects
 
         self._init_frame()
+
+    def add_individual_show(self):
+        success = False
+        if(self.show_cnt < MAX_INDIVIDUAL_SHOW_CNT):
+            success = True
+            self._adjust_show_cnt(self.show_cnt + 1)
+            self.show_spinbox.reconfigure_show_cnt(self.show_cnt)
+        else:
+            messagebox.showerror(
+                "Error",
+                "Maximum number of {} individual shows reached!".format(
+                    MAX_INDIVIDUAL_SHOW_CNT),
+                parent=self.sdt)
+        return success, self.show_cnt
 
     def get_show_info_list(self):
         show_info_list = []
@@ -38,6 +54,31 @@ class SDTShowFrame(Frame):
         self.show_spinbox.reconfigure_show_cnt(self.show_cnt)
 
         self._update_show_treeview()
+
+    def remove_individual_show(self):
+        show_num = self.show_spinbox.get_show_num()
+
+        success = False
+        if(self.show_cnt > MIN_INDIVIDUAL_SHOW_CNT):
+            success = True
+            self.individual_shows.pop(show_num - 1)
+            self.show_cnt -= 1
+            self.show_spinbox.reconfigure_show_cnt(self.show_cnt)
+            self._update_show_treeview()
+        elif(self.show_cnt == MIN_INDIVIDUAL_SHOW_CNT):
+            success = messagebox.askokcancel(
+                "Warning",
+                "Removing last individual show.\n"
+                "All set instructions will be cleared!",
+                icon="warning",
+                parent=self.sdt)
+            if(success):
+                self.show_cnt = 0
+                self.individual_shows = []
+                self._adjust_show_cnt(1)
+                self.show_spinbox.reconfigure_show_cnt(self.show_cnt)
+                self._update_show_treeview()
+        return success, self.show_cnt, show_num
 
     def _add_new_show(self):
         show = SDTIndividualShow(

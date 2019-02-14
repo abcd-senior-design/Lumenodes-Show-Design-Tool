@@ -32,6 +32,11 @@ class ShowDesignTool(Frame):
         # Intercepts Window Close to dump status log (for debugging)
         self.master.protocol("WM_DELETE_WINDOW", self._destroy_window)
 
+    def add_individual_show(self):
+        success, new_show_cnt = self.show_frame.add_individual_show()
+        self.individual_show_cnt = new_show_cnt
+        return success
+
     def dump_status_log(self):
         if(self.status_log):
             directory = ".status_logs"
@@ -63,6 +68,12 @@ class ShowDesignTool(Frame):
         self.show_frame.reconfigure_show_list(new_show_info_list,
                                               self.individual_show_cnt,
                                               self.set_cnt)
+
+    def remove_individual_show(self):
+        success, new_show_cnt, removed_show = \
+            self.show_frame.remove_individual_show()
+        self.individual_show_cnt = new_show_cnt
+        return success, removed_show
 
     def status_update(self, status_str):
         self.status_cnt += 1

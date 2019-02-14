@@ -11,10 +11,25 @@ class SDTShowOps(SDTOpsFrame):
         self._init_ops()
 
     def add_show(self):
-        self._sdt_status_update("Add Show")
+        success = self.sdt.add_individual_show()
+        if(success):
+            self._sdt_status_update(
+                "Added Show #{}".format(self.sdt.individual_show_cnt))
 
     def remove_show(self):
-        self._sdt_status_update("Remove Show")
+        old_show_cnt = self.sdt.individual_show_cnt
+        success, removed_show = self.sdt.remove_individual_show()
+        if(success and old_show_cnt != self.sdt.individual_show_cnt):
+            if(old_show_cnt != removed_show):
+                self._sdt_status_update(
+                    "Removed Show #{}. ".format(removed_show) +
+                    "Other shows shifted to fill the hole")
+            else:
+                self._sdt_status_update(
+                    "Removed Show #{}".format(removed_show))
+        elif(success and old_show_cnt == self.sdt.individual_show_cnt):
+            self._sdt_status_update(
+                "Cleared Show #{}".format(self.sdt.individual_show_cnt))
 
     def _init_ops(self):
         # Individual Show Operations
