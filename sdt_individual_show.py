@@ -9,6 +9,9 @@ class SDTIndividualShow:
 
         self._init_show()
 
+    def add_set(self):
+        self._adjust_set_cnt(self.set_cnt + 1)
+
     def add_set_instruction(self):
         # Tuple Representing R, G, and B values respectively
         set_instruction = (0, 0, 0)
@@ -24,6 +27,10 @@ class SDTIndividualShow:
         self._adjust_set_cnt(new_set_cnt)
         self._reconfigure_set_instructions(
             individual_show_info["set_instructions"])
+
+    def remove_set(self, curr_set_idx=-1):
+        self.set_instructions.pop(curr_set_idx)
+        self.set_cnt -= 1
 
     def _adjust_set_cnt(self, new_set_cnt):
         diff = new_set_cnt - self.set_cnt

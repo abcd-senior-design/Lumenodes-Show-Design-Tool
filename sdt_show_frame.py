@@ -32,6 +32,23 @@ class SDTShowFrame(Frame):
                 parent=self.sdt)
         return success, self.show_cnt
 
+    def add_set(self):
+        success = False
+        if(self.set_cnt < MAX_SET_CNT):
+            success = True
+            self.set_cnt += 1
+            for i in range(len(self.individual_shows)):
+                self.individual_shows[i].add_set()
+            self.show_treeview.reconfigure_set_cnt(self.set_cnt)
+            self._update_show_treeview()
+        else:
+            messagebox.showerror(
+                "Error",
+                "Maximum number of {} sets reached!".format(
+                    MAX_SET_CNT),
+                parent=self.sdt)
+        return success, self.set_cnt
+
     def get_show_info_list(self):
         show_info_list = []
 
@@ -80,6 +97,31 @@ class SDTShowFrame(Frame):
                 self._update_show_treeview()
         return success, self.show_cnt, show_num
 
+    def remove_set(self):
+        success = False
+        removed_set = -1
+        if(self.set_cnt > MIN_SET_CNT):
+            success = True
+            self.set_cnt -= 1
+            curr_set_idx = self._get_current_set_idx()
+
+            for i in range(len(self.individual_shows)):
+                self.individual_shows[i].remove_set(curr_set_idx)
+            self.show_treeview.reconfigure_set_cnt(self.set_cnt)
+            self._update_show_treeview()
+
+            removed_set = curr_set_idx + 1
+            if(removed_set <= 0):
+                removed_set = self.set_cnt + 1
+        else:
+            messagebox.showerror(
+                "Error",
+                "Minimum number of {} sets reached!\n".format(
+                    MIN_SET_CNT) +
+                "Cannot remove any more sets!",
+                parent=self.sdt)
+        return success, self.set_cnt, removed_set
+
     def _add_new_show(self):
         show = SDTIndividualShow(
             master=self, sdt=self.sdt, set_cnt=self.set_cnt)
@@ -94,6 +136,13 @@ class SDTShowFrame(Frame):
         elif(diff < 0):
             for i in range(-diff):
                 self.individual_shows.pop()
+
+    def _get_current_set_idx(self):
+        curr_set_iid = self.show_treeview.focus()
+        curr_set_idx = -1
+        if(curr_set_iid != ""):
+            curr_set_idx = self.show_treeview.index(curr_set_iid)
+        return curr_set_idx
 
     def _init_frame(self):
         self.grid_columnconfigure(index=0, weight=1)

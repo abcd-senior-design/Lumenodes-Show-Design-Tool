@@ -11,10 +11,20 @@ class SDTSetOps(SDTOpsFrame):
         self._init_ops()
 
     def add_set(self):
-        self._sdt_status_update("Add Set")
+        success = self.sdt.add_set()
+        if(success):
+            self._sdt_status_update(
+                "Added Set #{}".format(self.sdt.set_cnt))
 
     def remove_set(self):
-        self._sdt_status_update("Remove Set")
+        success, removed_set = self.sdt.remove_set()
+        if(success):
+            if(removed_set != self.sdt.set_cnt + 1):
+                self._sdt_status_update(
+                    "Removed Set #{}. ".format(removed_set) +
+                    "Other sets shifted to fill the hole")
+            else:
+                self._sdt_status_update("Removed Set #{}".format(removed_set))
 
     def _init_ops(self):
         # Set Operations

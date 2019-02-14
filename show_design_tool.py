@@ -37,6 +37,11 @@ class ShowDesignTool(Frame):
         self.individual_show_cnt = new_show_cnt
         return success
 
+    def add_set(self):
+        success, new_set_cnt = self.show_frame.add_set()
+        self.set_cnt = new_set_cnt
+        return success
+
     def dump_status_log(self):
         if(self.status_log):
             directory = ".status_logs"
@@ -74,6 +79,11 @@ class ShowDesignTool(Frame):
             self.show_frame.remove_individual_show()
         self.individual_show_cnt = new_show_cnt
         return success, removed_show
+
+    def remove_set(self):
+        success, new_set_cnt, removed_set = self.show_frame.remove_set()
+        self.set_cnt = new_set_cnt
+        return success, removed_set
 
     def status_update(self, status_str):
         self.status_cnt += 1
