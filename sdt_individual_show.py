@@ -1,3 +1,6 @@
+from tkinter.colorchooser import askcolor
+
+
 class SDTIndividualShow:
     def __init__(self, master=None, sdt=None, set_cnt=1):
         self.master = master
@@ -16,6 +19,20 @@ class SDTIndividualShow:
         # Tuple Representing R, G, and B values respectively
         set_instruction = (0, 0, 0)
         self.set_instructions.append(set_instruction)
+
+    def clear_set_instruction(self, set_idx):
+        self.set_instructions[set_idx] = (0, 0, 0)
+
+    def edit_set_instruction(self, set_idx):
+        success = False
+        new_color = askcolor()
+        if((new_color is not None) and (new_color[0] is not None)):
+            success = True
+            new_set_instr = (int(new_color[0][0]),
+                             int(new_color[0][1]),
+                             int(new_color[0][2]))
+            self.set_instructions[set_idx] = new_set_instr
+        return success
 
     def get_show_info(self):
         show_info = {}

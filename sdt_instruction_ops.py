@@ -11,10 +11,17 @@ class SDTInstructionOps(SDTOpsFrame):
         self._init_ops()
 
     def clear_set_instruction(self):
-        self._sdt_status_update("Clear Set Instruction")
+        show_num, set_num = self.sdt.clear_set_instruction()
+        self._sdt_status_update(
+            "Cleared Set Instruction #{} in Show #{}".format(
+                set_num, show_num))
 
     def edit_set_instruction(self):
-        self._sdt_status_update("Edit Set Instruction")
+        success, show_num, set_num = self.sdt.edit_set_instruction()
+        if(success):
+            self._sdt_status_update(
+                "Edited Set Instruction #{} in Show #{}".format(
+                    set_num, show_num))
 
     def _init_ops(self):
         # Set Instruction Operations

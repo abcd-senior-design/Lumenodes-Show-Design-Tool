@@ -49,6 +49,36 @@ class SDTShowFrame(Frame):
                 parent=self.sdt)
         return success, self.set_cnt
 
+    def clear_set_instruction(self):
+        show_idx = self.show_spinbox.get_show_num() - 1
+        set_idx = self._get_current_set_idx()
+        success = False
+        if(set_idx != -1):
+            success = \
+                self.individual_shows[show_idx].clear_set_instruction(set_idx)
+            self._update_show_treeview()
+        else:
+            messagebox.showerror(
+                "Error",
+                "Please select set instruction to clear!",
+                parent=self.sdt)
+        return show_idx + 1, set_idx + 1
+
+    def edit_set_instruction(self):
+        show_idx = self.show_spinbox.get_show_num() - 1
+        set_idx = self._get_current_set_idx()
+        success = False
+        if(set_idx != -1):
+            success = \
+                self.individual_shows[show_idx].edit_set_instruction(set_idx)
+            self._update_show_treeview()
+        else:
+            messagebox.showerror(
+                "Error",
+                "Please select set instruction to edit!",
+                parent=self.sdt)
+        return success, show_idx + 1, set_idx + 1
+
     def get_show_info_list(self):
         show_info_list = []
 

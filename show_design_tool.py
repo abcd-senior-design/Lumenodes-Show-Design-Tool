@@ -42,6 +42,9 @@ class ShowDesignTool(Frame):
         self.set_cnt = new_set_cnt
         return success
 
+    def clear_set_instruction(self):
+        return self.show_frame.clear_set_instruction()
+
     def dump_status_log(self):
         if(self.status_log):
             directory = ".status_logs"
@@ -56,6 +59,9 @@ class ShowDesignTool(Frame):
                 curr_time.strftime("%Y_%m_%d_%H_%M_%S") + ".txt"
             with open(directory + os.sep + filename, "w") as status_output:
                 status_output.write(self.status_log)
+
+    def edit_set_instruction(self):
+        return self.show_frame.edit_set_instruction()
 
     def get_global_show_info(self):
         global_show_info = {}
