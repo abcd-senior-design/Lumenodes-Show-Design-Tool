@@ -1,3 +1,4 @@
+from sdt_alias_entry import SDTAliasEntry
 from sdt_bounds import MAX_PACK_CNT
 from sdt_pack_id_prompt import SDTPackIDPrompt
 from sdt_pack_info import SDTPackInfo
@@ -15,6 +16,9 @@ class SDTPackFrame(Frame):
         self.pack_cnt = 0
         self.pack_info_list = []  # Stores SDTPackInfo objects
 
+        self.alias_entry = None
+        self.bind("<Configure>", self._move_alias_entry)
+
         self._init_frame()
 
     def add_pack_id(self):
@@ -28,8 +32,31 @@ class SDTPackFrame(Frame):
                 "Maximum number of {} Pack IDs reached!".format(MAX_PACK_CNT),
                 parent=self.sdt)
 
-    def alias_pack_id(self):
-        return True
+    def alias_pack_id(self, alias=None):
+        if(self.alias_entry is not None):
+            self._destroy_alias_entry()
+        pack_idx = self._get_current_pack_idx()
+        if(pack_idx >= 0):
+            if(alias is None):
+                alias = self._get_cell_contents(pack_idx, 1)
+            self.alias_entry = SDTAliasEntry(
+                master=self.pack_treeview,
+                sdt=self.sdt,
+                alias=alias,
+                command=self.update_pack_alias,
+                destroy_command=self._destroy_alias_entry)
+            self._move_alias_entry(None)
+
+        elif(self.pack_cnt == 0):
+            messagebox.showerror(
+                "Error",
+                "No Pack IDs to alias!",
+                parent=self.sdt)
+        else:
+            messagebox.showerror(
+                "Error",
+                "Please select Pack ID to alias!",
+                parent=self.sdt)
 
     def assign_pack_id(self):
         return True
@@ -53,6 +80,14 @@ class SDTPackFrame(Frame):
                 if(not self._is_in_pack_info_list(new_pack_id_num)):
                     self._add_pack_info(new_pack_id_num)
 
+                    new_pack_alias = new_pack_info_list[i]["pack_alias"]
+                    if(type(new_pack_alias) is str and
+                       new_pack_alias != "N/A"):
+                        new_alias_symbol, new_alias_number = \
+                            SDTAliasEntry.extract_alias(new_pack_alias)
+                        self.pack_info_list[-1].set_pack_alias(
+                            new_alias_symbol, new_alias_number)
+
         self.pack_treeview.reconfigure_pack_cnt(self.pack_cnt)
 
         self._update_pack_treeview()
@@ -61,6 +96,7 @@ class SDTPackFrame(Frame):
     def remove_pack_id(self):
         success = False
         removed_pack_id = None
+        removed_pack_alias = None
 
         if(self.pack_treeview.pack_cnt > 0):
             success = True
@@ -69,6 +105,7 @@ class SDTPackFrame(Frame):
 
             removed_pack_info = self.pack_info_list.pop(pack_idx)
             removed_pack_id = removed_pack_info.get_id_str()
+            removed_pack_alias = removed_pack_info.get_alias_str()
 
             self.pack_treeview.reconfigure_pack_cnt(self.pack_cnt)
             self._update_pack_treeview()
@@ -78,7 +115,40 @@ class SDTPackFrame(Frame):
                 "Error",
                 "No more Pack IDs to remove!",
                 parent=self.sdt)
-        return success, removed_pack_id
+        return success, removed_pack_id, removed_pack_alias
+
+    def update_pack_alias(self):
+        new_alias_symbol = self.alias_entry.alias_symbol.get()
+        new_alias_number = self.alias_entry.alias_number.get()
+        new_pack_alias = "%c%d" % (new_alias_symbol, new_alias_number)
+
+        pack_alias_used = False
+        for i in range(len(self.pack_info_list)):
+            pack_info = self.pack_info_list[i]
+            if(pack_info.get_alias_str() == new_pack_alias and
+               i != self._get_current_pack_idx()):
+                messagebox.showerror(
+                    "Error",
+                    "Pack ID {} already has Pack Alias {}".format(
+                        pack_info.get_id_str(), new_pack_alias),
+                    parent=self.sdt)
+                pack_alias_used = True
+                break
+
+        if(not pack_alias_used):
+            pack_idx = self._get_current_pack_idx()
+            pack_info = self.pack_info_list[pack_idx]
+            pack_info.set_pack_alias(new_alias_symbol, new_alias_number)
+
+            self._update_pack_treeview()
+            self._destroy_alias_entry()
+
+            if(self.sdt is not None):
+                self.sdt.status_update("Aliased Pack ID {} to {}".format(
+                    pack_info.get_id_str(),
+                    pack_info.get_alias_str()))
+        else:
+            self.alias_pack_id(alias=new_pack_alias)
 
     def _add_pack_id(self):
         new_pack_id = self.pack_id_prompt.get_pack_id()
@@ -114,11 +184,30 @@ class SDTPackFrame(Frame):
                                 pack_id=new_pack_id_num)
         self.pack_info_list.append(pack_info)
 
+    def _destroy_alias_entry(self):
+        if(self.alias_entry is not None):
+            self.alias_entry.destroy()
+            self.alias_entry = None
+
     def _extract_id_num(self, new_pack_id):
         try:
             return int(new_pack_id.replace(":", ""), 16)
         except:
             return -1
+
+    def _get_cell_bounds(self, pack_idx, column):
+        pack_iid = self.pack_treeview.pack_iids[pack_idx]
+        if(column == 0):
+            return self.pack_treeview.bbox(pack_iid)
+        else:
+            return self.pack_treeview.bbox(pack_iid, column - 1)
+
+    def _get_cell_contents(self, pack_idx, column):
+        pack_iid = self.pack_treeview.pack_iids[pack_idx]
+        if(column == 0):
+            return self.pack_treeview.item(pack_iid, 'text')
+        else:
+            return self.pack_treeview.item(pack_iid, 'values')[column - 1]
 
     def _get_current_pack_idx(self):
         curr_pack_iid = self.pack_treeview.focus()
@@ -153,6 +242,18 @@ class SDTPackFrame(Frame):
             if(curr_num == pack_id_num):
                 return True
         return False
+
+    def _move_alias_entry(self, event):
+        if(self.alias_entry is not None):
+            pack_idx = self._get_current_pack_idx()
+            x, y, width, height = self._get_cell_bounds(pack_idx, 1)
+
+            pady = height // 2
+            self.alias_entry.place(anchor="w",
+                                   width=width,
+                                   x=x,
+                                   y=(y + pady))
+            self.alias_entry.focus()
 
     def _update_pack_treeview(self):
         self.pack_treeview.populate_pack_info_list(self.pack_info_list)

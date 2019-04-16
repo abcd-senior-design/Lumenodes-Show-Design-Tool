@@ -1,5 +1,6 @@
 from functools import partial
 from re import fullmatch, IGNORECASE
+from sdt_alias_entry import SDTAliasEntry
 from sdt_bounds import PACK_ID_BYTES
 from sdt_ops_frame import SDTOpsFrame
 from tkinter import filedialog
@@ -295,9 +296,26 @@ class SDTFileOps(SDTOpsFrame):
                                     "Pack ID info is incorrectly "
                                     "formatted! 'pack_id' is "
                                     "missing!")
+        elif("pack_alias" not in pack_info):
+            self._sdt_status_update(base_error_string +
+                                    "Pack ID info is incorrectly "
+                                    "formatted! 'pack_alias' is "
+                                    "missing!")
         else:
-            pack_verified = self._verify_pack_id(pack_info["pack_id"],
-                                                 base_error_string)
+            pack_alias = pack_info["pack_alias"]
+            if(pack_alias == "N/A"):
+                pack_verified = True
+            else:
+                alias_symbol, alias_number = SDTAliasEntry.extract_alias(
+                    pack_alias)
+                if(alias_symbol is not None and alias_number is not None):
+                    pack_verified = self._verify_pack_id(pack_info["pack_id"],
+                                                         base_error_string)
+                else:
+                    self._sdt_status_update(base_error_string +
+                                            "Pack ID info is incorrectly "
+                                            "formatted! 'pack_alias' is "
+                                            "'{}'!".format(pack_alias))
 
         return pack_verified
 

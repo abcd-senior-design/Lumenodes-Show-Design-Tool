@@ -3,7 +3,7 @@ from tkinter.ttk import Treeview
 
 class SDTPackTreeview(Treeview):
     def __init__(self, master=None, sdt=None):
-        Treeview.__init__(self, master, columns=())
+        Treeview.__init__(self, master, columns=("Alias"))
         self.sdt = sdt
 
         # Initialize Variables
@@ -18,7 +18,8 @@ class SDTPackTreeview(Treeview):
     def populate_pack_info_list(self, pack_info_list):
         for i in range(self.pack_cnt):
             self.item(self.pack_iids[i],
-                      text=pack_info_list[i].get_info_tuple()[0])
+                      text=pack_info_list[i].get_info_tuple()[0],
+                      values=pack_info_list[i].get_info_tuple()[1:])
 
     def reconfigure_pack_cnt(self, new_pack_cnt):
         self._adjust_pack_cnt(new_pack_cnt)
@@ -47,5 +48,8 @@ class SDTPackTreeview(Treeview):
     def _init_treeview(self):
         self.column("#0", anchor="center", minwidth=40,
                     stretch=True, width=40)
+        self.column("Alias", anchor="center", minwidth=40,
+                    stretch=True, width=40)
 
         self.heading("#0", anchor="center", text="Pack ID")
+        self.heading("Alias", anchor="center", text="Alias")

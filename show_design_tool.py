@@ -47,7 +47,7 @@ class ShowDesignTool(Frame):
         return success
 
     def alias_pack_id(self):
-        return self.pack_frame.alias_pack_id()
+        self.pack_frame.alias_pack_id()
 
     def assign_pack_id(self):
         return self.pack_frame.assign_pack_id()

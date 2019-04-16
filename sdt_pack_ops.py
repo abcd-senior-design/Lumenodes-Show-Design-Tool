@@ -13,9 +13,7 @@ class SDTPackOps(SDTOpsFrame):
         self.sdt.add_pack_id()
 
     def alias_pack_id(self):
-        success = self.sdt.alias_pack_id()
-        if(success):
-            self._sdt_status_update("Aliased Pack ID")
+        self.sdt.alias_pack_id()
 
     def assign_pack_id(self):
         success = self.sdt.assign_pack_id()
@@ -23,10 +21,16 @@ class SDTPackOps(SDTOpsFrame):
             self._sdt_status_update("Assigned Pack ID")
 
     def remove_pack_id(self):
-        success, removed_pack_id = self.sdt.remove_pack_id()
+        success, removed_pack_id, removed_pack_alias = \
+            self.sdt.remove_pack_id()
         if(success):
-            self._sdt_status_update(
-                "Removed Pack ID {}".format(removed_pack_id))
+            if(type(removed_pack_alias) is str and
+               removed_pack_alias != "N/A"):
+                self._sdt_status_update("Removed Pack ID {} (Alias {})".format(
+                    removed_pack_id, removed_pack_alias))
+            else:
+                self._sdt_status_update(
+                    "Removed Pack ID {}".format(removed_pack_id))
 
     def _init_ops(self):
         # Pack Operations
