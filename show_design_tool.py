@@ -39,7 +39,7 @@ class ShowDesignTool(Frame):
         return success
 
     def add_pack_id(self):
-        return self.pack_frame.add_pack_id()
+        self.pack_frame.add_pack_id()
 
     def add_set(self):
         success, new_set_cnt = self.show_frame.add_set()
@@ -80,6 +80,8 @@ class ShowDesignTool(Frame):
         global_show_info["individual_show_cnt"] = self.individual_show_cnt
         global_show_info["individual_shows"] = \
             self.show_frame.get_show_info_list()
+        global_show_info["pack_info_list"] = \
+            self.pack_frame.get_pack_info_list()
         return global_show_info
 
     def reconfigure_global_show(self, global_show_info):
@@ -89,6 +91,8 @@ class ShowDesignTool(Frame):
         self.show_frame.reconfigure_show_list(new_show_info_list,
                                               self.individual_show_cnt,
                                               self.set_cnt)
+        new_pack_info_list = global_show_info["pack_info_list"]
+        self.pack_frame.reconfigure_pack_list(new_pack_info_list)
 
     def remove_individual_show(self):
         success, new_show_cnt, removed_show = \

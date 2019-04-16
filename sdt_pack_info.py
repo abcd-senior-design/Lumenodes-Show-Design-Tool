@@ -24,3 +24,9 @@ class SDTPackInfo:
         for i in range(PACK_ID_BYTES):
             hex_str_bytes.append(hex_str[i * 2: (i + 1) * 2])
         return ":".join(hex_str_bytes)
+
+    def get_pack_info(self):
+        pack_info = {}
+        pack_info["type"] = "pack_info"
+        pack_info["pack_id"] = self.get_id_str()
+        return pack_info

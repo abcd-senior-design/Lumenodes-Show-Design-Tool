@@ -1,4 +1,6 @@
 from functools import partial
+from re import fullmatch, IGNORECASE
+from sdt_bounds import PACK_ID_BYTES
 from sdt_ops_frame import SDTOpsFrame
 from tkinter import filedialog
 from tkinter.ttk import Button
@@ -9,6 +11,13 @@ import zipfile
 
 
 class SDTFileOps(SDTOpsFrame):
+    hex_regex_str = r"[0-9a-f]"
+    pack_id_regex_str = r""
+    for i in range(PACK_ID_BYTES):
+        pack_id_regex_str += hex_regex_str + r"{2}"
+        if(i + 1 < PACK_ID_BYTES):
+            pack_id_regex_str += r":"
+
     def __init__(self, master=None, sdt=None):
         SDTOpsFrame.__init__(self, master=master, sdt=sdt,
                              text="File Operations")
@@ -176,10 +185,16 @@ class SDTFileOps(SDTOpsFrame):
                                     "Global show info is incorrectly "
                                     "formatted! "
                                     "'individual_shows' is missing!")
+        elif("pack_info_list" not in global_show_info):
+            self._sdt_status_update(base_error_string +
+                                    "Global show info is incorrectly "
+                                    "formatted! "
+                                    "'pack_info_list' is missing!")
         else:
             new_set_cnt = global_show_info["set_cnt"]
             new_show_cnt = global_show_info["individual_show_cnt"]
             new_show_info_list = global_show_info["individual_shows"]
+            new_pack_info_list = global_show_info["pack_info_list"]
 
             if(new_set_cnt <= 0):
                 self._sdt_status_update(base_error_string +
@@ -201,15 +216,21 @@ class SDTFileOps(SDTOpsFrame):
                         new_show_info_list[i], new_set_cnt, base_error_string)
                     if(not show_verified):
                         break
-                global_show_verified = show_verified
+
+                pack_verified = True
+                for i in range(len(new_pack_info_list)):
+                    pack_verified = self._verify_pack_info(
+                        new_pack_info_list[i], base_error_string)
+                    if(not pack_verified):
+                        break
+
+                global_show_verified = (show_verified and pack_verified)
 
         return global_show_verified
 
     def _verify_individual_show(self, individual_show_info,
                                 new_set_cnt, base_error_string):
         show_verified = False
-        correct_format = ("type" in individual_show_info and
-                          "set_instructions" in individual_show_info)
 
         if("type" not in individual_show_info):
             self._sdt_status_update(base_error_string +
@@ -243,6 +264,42 @@ class SDTFileOps(SDTOpsFrame):
                 show_verified = set_instruction_verified
 
         return show_verified
+
+    def _verify_pack_id(self, pack_id, base_error_string):
+        pack_id_verified = False
+
+        if(fullmatch(self.pack_id_regex_str, pack_id, IGNORECASE)):
+            pack_id_verified = True
+        else:
+            self._sdt_status_update(base_error_string +
+                                    "Pack ID info is incorrectly "
+                                    "formatted! 'pack_id' is '{}'!".format(
+                                        pack_id))
+
+        return pack_id_verified
+
+    def _verify_pack_info(self, pack_info, base_error_string):
+        pack_verified = False
+
+        if("type" not in pack_info):
+            self._sdt_status_update(base_error_string +
+                                    "Pack ID info is incorrectly "
+                                    "formatted! 'type' is missing!")
+        elif(pack_info["type"] != "pack_info"):
+            self._sdt_status_update(base_error_string +
+                                    "Pack ID info is incorrectly "
+                                    "formatted! 'type' is '{}'!".format(
+                                        pack_info["type"]))
+        elif("pack_id" not in pack_info):
+            self._sdt_status_update(base_error_string +
+                                    "Pack ID info is incorrectly "
+                                    "formatted! 'pack_id' is "
+                                    "missing!")
+        else:
+            pack_verified = self._verify_pack_id(pack_info["pack_id"],
+                                                 base_error_string)
+
+        return pack_verified
 
     def _verify_set_instruction(self, set_instruction_info, base_error_string):
         set_instruction_verified = False
