@@ -301,6 +301,17 @@ class SDTFileOps(SDTOpsFrame):
                                     "Pack ID info is incorrectly "
                                     "formatted! 'pack_alias' is "
                                     "missing!")
+        elif("pack_assignment" not in pack_info):
+            self._sdt_status_update(base_error_string +
+                                    "Pack ID info is incorrectly "
+                                    "formatted! 'pack_assignment' is "
+                                    "missing!")
+        elif(type(pack_info["pack_assignment"]) is not int):
+            self._sdt_status_update(base_error_string +
+                                    "Pack ID info is incorrectly "
+                                    "formatted! 'pack_assignment' is "
+                                    "'{}'!".format(
+                                        pack_info["pack_assignment"]))
         else:
             pack_alias = pack_info["pack_alias"]
             if(pack_alias == "N/A"):

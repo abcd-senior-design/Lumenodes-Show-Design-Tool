@@ -116,7 +116,8 @@ class SDTShowFrame(Frame):
             success = messagebox.askokcancel(
                 "Warning",
                 "Removing last individual show.\n"
-                "All set instructions will be cleared!",
+                "All set instructions will be cleared and\n"
+                "all assigned packs will be unassigned!",
                 icon="warning",
                 parent=self.sdt)
             if(success):

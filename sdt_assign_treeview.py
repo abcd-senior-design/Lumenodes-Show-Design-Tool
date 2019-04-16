@@ -1,25 +1,23 @@
 from tkinter.ttk import Treeview
 
 
-class SDTPackTreeview(Treeview):
+class SDTAssignTreeview(Treeview):
     def __init__(self, master=None, sdt=None):
-        Treeview.__init__(self, master, columns=("Alias", "Show #"))
+        Treeview.__init__(self, master)
         self.sdt = sdt
 
         # Initialize Variables
         self.pack_cnt = 0
-        self.pack_iids = []  # Stores pack info iids within self
+        self.pack_iids = []  # Stores pack iids within self
 
         self._init_treeview()
 
         # Bind method that prevents users from resizing the pack info columns
         self.bind("<Button-1>", self._block_column_resize)
 
-    def populate_pack_info_list(self, pack_info_list):
+    def populate_pack_info_list(self, pack_strs):
         for i in range(self.pack_cnt):
-            self.item(self.pack_iids[i],
-                      text=pack_info_list[i].get_info_tuple()[0],
-                      values=pack_info_list[i].get_info_tuple()[1:])
+            self.item(self.pack_iids[i], text=pack_strs[i])
 
     def reconfigure_pack_cnt(self, new_pack_cnt):
         self._adjust_pack_cnt(new_pack_cnt)
@@ -46,13 +44,7 @@ class SDTPackTreeview(Treeview):
             return "break"
 
     def _init_treeview(self):
-        self.column("#0", anchor="center", minwidth=80,
-                    stretch=True, width=80)
-        self.column("Alias", anchor="center", minwidth=80,
-                    stretch=True, width=80)
-        self.column("Show #", anchor="center", minwidth=80,
-                    stretch=True, width=80)
+        self.column("#0", anchor="center", minwidth=40,
+                    stretch=True, width=40)
 
-        self.heading("#0", anchor="center", text="Pack ID")
-        self.heading("Alias", anchor="center", text="Alias")
-        self.heading("Show #", anchor="center", text="Show #")
+        self.heading("#0", anchor="center", text="Pack")

@@ -36,6 +36,8 @@ class ShowDesignTool(Frame):
     def add_individual_show(self):
         success, new_show_cnt = self.show_frame.add_individual_show()
         self.individual_show_cnt = new_show_cnt
+        if(success):
+            self.pack_frame.add_individual_show()
         return success
 
     def add_pack_id(self):
@@ -91,6 +93,7 @@ class ShowDesignTool(Frame):
         self.show_frame.reconfigure_show_list(new_show_info_list,
                                               self.individual_show_cnt,
                                               self.set_cnt)
+        self.pack_frame.reconfigure_show_cnt(self.individual_show_cnt)
         new_pack_info_list = global_show_info["pack_info_list"]
         self.pack_frame.reconfigure_pack_list(new_pack_info_list)
 
@@ -98,6 +101,8 @@ class ShowDesignTool(Frame):
         success, new_show_cnt, removed_show = \
             self.show_frame.remove_individual_show()
         self.individual_show_cnt = new_show_cnt
+        if(success):
+            self.pack_frame.remove_individual_show(removed_show - 1)
         return success, removed_show
 
     def remove_pack_id(self):
@@ -183,7 +188,9 @@ class ShowDesignTool(Frame):
                              sticky="nswe")
 
         # Pack ID Frame Setup
-        self.pack_frame = SDTPackFrame(master=self.master, sdt=self)
+        self.pack_frame = SDTPackFrame(master=self.master,
+                                       sdt=self,
+                                       show_cnt=self.individual_show_cnt)
         self.pack_frame.grid(in_=self.master,
                              row=self.row_cnt,
                              column=1,

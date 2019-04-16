@@ -76,7 +76,7 @@ class SDTAliasEntry(Frame):
                                       justify="center",
                                       textvariable=self.alias_symbol,
                                       values=SDTAliasEntry.valid_symbols,
-                                      width=3)
+                                      width=6)
 
         # Bind Esacpe event to escape and not save the input
         self.symbol_spinbox.bind("<Escape>", self.destroy_command)

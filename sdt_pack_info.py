@@ -10,6 +10,7 @@ class SDTPackInfo:
         self.pack_id = pack_id
         self.pack_alias_symbol = ""
         self.pack_alias_number = -1
+        self.show_idx = -1
 
     def __str__(self):
         if(self.pack_alias_number == -1):
@@ -18,7 +19,7 @@ class SDTPackInfo:
             return self.get_alias_str()
 
     def get_info_tuple(self):
-        return (self.get_id_str(), self.get_alias_str())
+        return (self.get_id_str(), self.get_alias_str(), self.get_show_str())
 
     def get_alias_str(self):
         if(self.pack_alias_number == -1):
@@ -41,8 +42,18 @@ class SDTPackInfo:
         pack_info["type"] = "pack_info"
         pack_info["pack_id"] = self.get_id_str()
         pack_info["pack_alias"] = self.get_alias_str()
+        pack_info["pack_assignment"] = self.show_idx + 1
         return pack_info
+
+    def get_show_str(self):
+        if(self.show_idx == -1):
+            return "N/A"
+        else:
+            return "%d" % (self.show_idx + 1)
 
     def set_pack_alias(self, alias_symbol, alias_number):
         self.pack_alias_symbol = alias_symbol
         self.pack_alias_number = alias_number
+
+    def set_pack_assignment(self, show_idx):
+        self.show_idx = show_idx

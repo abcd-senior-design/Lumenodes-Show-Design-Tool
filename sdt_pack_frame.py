@@ -3,23 +3,28 @@ from sdt_bounds import MAX_PACK_CNT
 from sdt_pack_id_prompt import SDTPackIDPrompt
 from sdt_pack_info import SDTPackInfo
 from sdt_pack_treeview import SDTPackTreeview
+from sdt_show_assign_prompt import SDTShowAssignPrompt
 from tkinter import messagebox
 from tkinter.ttk import Button, Frame, Scrollbar
 
 
 class SDTPackFrame(Frame):
-    def __init__(self, master=None, sdt=None):
+    def __init__(self, master=None, sdt=None, show_cnt=1):
         Frame.__init__(self, master)
         self.sdt = sdt
 
         # Initialize Variables
         self.pack_cnt = 0
         self.pack_info_list = []  # Stores SDTPackInfo objects
+        self.show_cnt = show_cnt
 
         self.alias_entry = None
         self.bind("<Configure>", self._move_alias_entry)
 
         self._init_frame()
+
+    def add_individual_show(self):
+        self.show_cnt += 1
 
     def add_pack_id(self):
         if(self.pack_treeview.pack_cnt < MAX_PACK_CNT):
@@ -59,7 +64,18 @@ class SDTPackFrame(Frame):
                 parent=self.sdt)
 
     def assign_pack_id(self):
-        return True
+        if(self.pack_cnt == 0):
+            messagebox.showerror(
+                "Error",
+                "No Pack IDs to assign!",
+                parent=self.sdt)
+        else:
+            self.assign_prompt = SDTShowAssignPrompt(
+                master=self,
+                sdt=self.sdt,
+                show_cnt=self.show_cnt,
+                pack_info_list=self.pack_info_list,
+                destroy_command=self._destroy_assign_prompt)
 
     def get_pack_info_list(self):
         pack_info_list = []
@@ -87,11 +103,37 @@ class SDTPackFrame(Frame):
                             SDTAliasEntry.extract_alias(new_pack_alias)
                         self.pack_info_list[-1].set_pack_alias(
                             new_alias_symbol, new_alias_number)
+                    new_pack_assignment = \
+                        new_pack_info_list[i]["pack_assignment"]
+                    if(new_pack_assignment <= 0 or
+                       new_pack_assignment > self.show_cnt):
+                        new_pack_assignment = 0
+                    self.pack_info_list[-1].set_pack_assignment(
+                        new_pack_assignment - 1)
 
         self.pack_treeview.reconfigure_pack_cnt(self.pack_cnt)
 
         self._update_pack_treeview()
         self._update_program_button()
+
+    def reconfigure_show_cnt(self, new_show_cnt):
+        self.show_cnt = new_show_cnt
+        for pack_info in self.pack_info_list:
+            if(pack_info.show_idx >= new_show_cnt):
+                pack_info.set_pack_assignment(-1)
+        self._update_pack_treeview()
+
+    def remove_individual_show(self, removed_show_idx):
+        self.show_cnt -= 1
+        for pack_info in self.pack_info_list:
+            if(pack_info.show_idx > removed_show_idx):
+                pack_info.set_pack_assignment(pack_info.show_idx - 1)
+            elif(pack_info.show_idx == removed_show_idx):
+                pack_info.set_pack_assignment(-1)
+
+        if(self.show_cnt <= 0):
+            self.show_cnt = 1
+        self._update_pack_treeview()
 
     def remove_pack_id(self):
         success = False
@@ -188,6 +230,12 @@ class SDTPackFrame(Frame):
         if(self.alias_entry is not None):
             self.alias_entry.destroy()
             self.alias_entry = None
+
+    def _destroy_assign_prompt(self):
+        if(self.assign_prompt is not None):
+            self._update_pack_treeview()
+            self.assign_prompt.destroy()
+            self.assign_prompt = None
 
     def _extract_id_num(self, new_pack_id):
         try:
