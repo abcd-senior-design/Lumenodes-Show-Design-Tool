@@ -1,5 +1,6 @@
 from datetime import datetime
 from sdt_op_ribbon import SDTOpRibbon
+from sdt_pack_frame import SDTPackFrame
 from sdt_show_frame import SDTShowFrame
 from tkinter import Tk
 from tkinter.ttk import Frame, Label
@@ -37,10 +38,19 @@ class ShowDesignTool(Frame):
         self.individual_show_cnt = new_show_cnt
         return success
 
+    def add_pack_id(self):
+        return self.pack_frame.add_pack_id()
+
     def add_set(self):
         success, new_set_cnt = self.show_frame.add_set()
         self.set_cnt = new_set_cnt
         return success
+
+    def alias_pack_id(self):
+        return self.pack_frame.alias_pack_id()
+
+    def assign_pack_id(self):
+        return self.pack_frame.assign_pack_id()
 
     def clear_set_instruction(self):
         return self.show_frame.clear_set_instruction()
@@ -85,6 +95,9 @@ class ShowDesignTool(Frame):
             self.show_frame.remove_individual_show()
         self.individual_show_cnt = new_show_cnt
         return success, removed_show
+
+    def remove_pack_id(self):
+        return self.pack_frame.remove_pack_id()
 
     def remove_set(self):
         success, new_set_cnt, removed_set = self.show_frame.remove_set()
@@ -143,30 +156,60 @@ class ShowDesignTool(Frame):
         self.master.title("Lumenodes Show Design Tool")
         self.master.resizable(True, True)
 
-        self.master.grid_columnconfigure(index=0, weight=1)
-
+        # Row 0 Setup
         # Operation Ribbon Setup
         self.op_ribbon = SDTOpRibbon(master=self.master, sdt=self)
-        self.op_ribbon.grid(in_=self.master, row=self.row_cnt, sticky="n")
+        self.op_ribbon.grid(in_=self.master,
+                            row=self.row_cnt,
+                            column=0, columnspan=2,
+                            sticky="n")
+
+        # Row 0 Finished
         self.row_cnt += 1
 
+        # Row 1 Setup
         # Individual Show Frame Setup
-        self.show_frame = SDTShowFrame(master=self.master, sdt=self,
-                                       show_cnt=self.individual_show_cnt,
-                                       set_cnt=self.set_cnt)
-        self.show_frame.grid(
-            in_=self.master, row=self.row_cnt, sticky="nswe")
+        self.show_frame = SDTShowFrame(master=self.master,
+                                       sdt=self,
+                                       set_cnt=self.set_cnt,
+                                       show_cnt=self.individual_show_cnt)
+        self.show_frame.grid(in_=self.master,
+                             row=self.row_cnt,
+                             column=0,
+                             sticky="nswe")
+
+        # Pack ID Frame Setup
+        self.pack_frame = SDTPackFrame(master=self.master, sdt=self)
+        self.pack_frame.grid(in_=self.master,
+                             row=self.row_cnt,
+                             column=1,
+                             sticky="nswe")
+
+        # Row 1 Finished
         self.row_cnt += 1
 
+        # Row 2 Setup
         # Status Output
         self.status_out = Label(self.master, text="Status: [EMPTY]")
-        self.status_out.grid(in_=self.master, row=self.row_cnt, sticky="s")
+        self.status_out.grid(in_=self.master,
+                             row=self.row_cnt,
+                             column=0, columnspan=2,
+                             sticky="s")
+
+        # Row 2 Finished
         self.row_cnt += 1
 
         # Allow Each Row to expand appropriately to fit contents upon initial
         # creation of each element
         for i in range(self.row_cnt):
             self.master.grid_rowconfigure(index=i, weight=1)
+
+        # Allow the Show Frame to grow twice as quickly than the Pack Frame
+        # (width-wise), to emphasize that the Show Frame is the primary focus
+        show_frame_row = self.show_frame.grid_info()['column']
+        pack_frame_row = self.pack_frame.grid_info()['column']
+        self.master.grid_columnconfigure(index=show_frame_row, weight=2)
+        self.master.grid_columnconfigure(index=pack_frame_row, weight=1)
 
 
 if __name__ == "__main__":

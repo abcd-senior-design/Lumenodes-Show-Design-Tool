@@ -1,4 +1,3 @@
-from functools import partial
 from sdt_ops_frame import SDTOpsFrame
 from tkinter.ttk import Button
 
@@ -11,31 +10,43 @@ class SDTPackOps(SDTOpsFrame):
         self._init_ops()
 
     def add_pack_id(self):
-        self._sdt_status_update("Add Pack ID")
+        success = self.sdt.add_pack_id()
+        if(success):
+            self._sdt_status_update("Added Pack ID")
 
     def alias_pack_id(self):
-        self._sdt_status_update("Alias Pack ID")
+        success = self.sdt.alias_pack_id()
+        if(success):
+            self._sdt_status_update("Aliased Pack ID")
 
     def assign_pack_id(self):
-        self._sdt_status_update("Assign Pack ID")
+        success = self.sdt.assign_pack_id()
+        if(success):
+            self._sdt_status_update("Assigned Pack ID")
 
     def remove_pack_id(self):
-        self._sdt_status_update("Remove Pack ID")
+        success = self.sdt.remove_pack_id()
+        if(success):
+            self._sdt_status_update("Removed Pack ID")
 
     def _init_ops(self):
-            # Pack Operations
-        self.add_pack_id_button = Button(
-            self, text="Add Pack ID", command=partial(self.add_pack_id))
+        # Pack Operations
+        self.add_pack_id_button = Button(master=self,
+                                         text="Add Pack ID",
+                                         command=self.add_pack_id)
         self._add(self.add_pack_id_button)
 
-        self.remove_pack_id_button = Button(
-            self, text="Remove Pack ID", command=partial(self.remove_pack_id))
+        self.remove_pack_id_button = Button(master=self,
+                                            text="Remove Pack ID",
+                                            command=self.remove_pack_id)
         self._add(self.remove_pack_id_button)
 
-        self.alias_pack_id_button = Button(
-            self, text="Alias Pack ID", command=partial(self.alias_pack_id))
+        self.alias_pack_id_button = Button(master=self,
+                                           text="Alias Pack ID",
+                                           command=self.alias_pack_id)
         self._add(self.alias_pack_id_button)
 
-        self.assign_pack_id_button = Button(
-            self, text="Assign Pack ID", command=partial(self.assign_pack_id))
+        self.assign_pack_id_button = Button(master=self,
+                                            text="Assign Pack ID",
+                                            command=self.assign_pack_id)
         self._add(self.assign_pack_id_button)
